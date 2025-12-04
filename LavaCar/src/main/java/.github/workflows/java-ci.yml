@@ -1,0 +1,41 @@
+name: Java CI (No Maven)
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Criar pasta de saída
+        run: mkdir -p out
+
+      - name: Compilar todos os arquivos .java
+        run: |
+          find . -name "*.java" > sources.txt
+          javac -d out @sources.txt
+
+      - name: Executar classe Main
+        run: |
+          echo "Executando Main..."
+          java -cp out Main
+
+      - name: Upload dos arquivos compilados
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavajato-build
+          path: out
